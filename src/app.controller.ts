@@ -15,7 +15,7 @@ import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-    constructor(private readonly authService: AuthService, private readonly appService: AppService) { }
+    constructor(private readonly authService: AuthService, private readonly usersService: UsersService, private readonly appService: AppService) { }
 
     @UseGuards(LocalAuthGuard)
     @Post('auth/login')
@@ -29,7 +29,7 @@ export class AppController {
         return req.user;
     }
 
-    @Get('/')
+    @Get()
     getHello(): string {
       return this.appService.getHello();
     }
