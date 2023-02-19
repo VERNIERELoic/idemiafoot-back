@@ -39,7 +39,7 @@ describe('Users - /users (e2e)', () => {
   it('Create [POST /users]', () => {
     return request(app.getHttpServer())
       .post('/users')
-      .send(users as CreateUserDto)
+      .send(users as unknown as CreateUserDto)
       .expect(201)
       .then(({ body }) => {
         expect(body).toEqual(users);
