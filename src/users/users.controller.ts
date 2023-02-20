@@ -21,6 +21,11 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Get(':userName')
+  findByUsername(@Param('userName', ParseIntPipe) userName: string): Promise<User> {
+    return this.usersService.findByUsername(userName);
+  }
+
   @Get()
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
