@@ -21,9 +21,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get(':userName')
-  findByUsername(@Param('userName', ParseIntPipe) userName: string): Promise<User> {
-    return this.usersService.findByUsername(userName);
+  @Post('findByUsername')
+  async findByUsername(@Body() body: { username: string }) {
+    const user = await this.usersService.findByUsername(body.username);
+    if (user) {
+      return user;
+    } else {
+      return { message: 'User not found' };
+    }
   }
 
   @Get()
