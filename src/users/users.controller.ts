@@ -22,8 +22,8 @@ export class UsersController {
   }
 
   @Post('findByUsername')
-  async findByUsername(@Body() body: { userName: string }) {
-    const user = await this.usersService.findByUsername(body.userName);
+  async findByUsername(@Body() body: { username: string }) {
+    const user = await this.usersService.findByUsername(body.username);
     if (user) {
       return user;
     } else {

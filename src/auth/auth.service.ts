@@ -1,50 +1,31 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { User, UsersService } from '../users/users.service';
+import { Injectable } from '@nestjs/common';
+import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcryptjs';
-
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
   ) { }
 
-
-  // async validateUser(username: string, password: string): Promise<any> {
-  //   const userToAuth = await this.usersService.findByUsername(username);
-  //   if (userToAuth && bcrypt.compareSync(password, userToAuth.password)) {
-  //     const { password: _, ...result } = userToAuth;
-  //     return result;
-  //   }
-  //   return null;
-  // }
-
-  async validateUser(username: string, password: string): Promise<User> {
+  async validateUser(username: string, pass: string): Promise<any> {
     const user = await this.usersService.findByUsername(username);
-    console.log("validate user : ", user);
-    if (!user) {
-      throw new UnauthorizedException();
+    console.log(user);
+    if (user && bcrypt.compare(user.password, pass)){
+      const { password, ...result } = user;
+      console.log('pass ok');
+      return result;
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("password ok ?", isPasswordValid);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException();
-    }
-    return user;
+    console.log('wrong pass');
+    return null;
   }
 
-  async login(user: { username: string; password: string }): Promise<any> {
-    const userVerified = await this.validateUser(user.username, user.password);
-    console.log("login :", userVerified);
-    if (!userVerified) {
-      throw new Error('Authentication failed');
-    } else {
-      const payload = { username: userVerified.userName, sub: userVerified.id };
-      return {
-        access_token: this.jwtService.sign(payload),
-      };
-    }
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 }
