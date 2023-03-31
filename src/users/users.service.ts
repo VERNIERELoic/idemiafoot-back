@@ -23,6 +23,7 @@ export class UsersService {
     user.lastname = createUserDto.lastname;
     user.email = createUserDto.email;
     user.password = hashedPassword
+    user.phone = createUserDto.phone;
 
     return this.usersRepository.save(user);
   }

@@ -6,7 +6,9 @@ import {
   Param,
   Post,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
@@ -15,8 +17,7 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-
-  @Post()
+  @Post('register')
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
@@ -32,6 +33,7 @@ export class UsersController {
   }
 
   @Get()
+  //@UseGuards(JwtAuthGuard)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
