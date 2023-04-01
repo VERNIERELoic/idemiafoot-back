@@ -7,7 +7,9 @@ import {
   Post,
   ParseIntPipe,
   UseGuards,
+  Req,
 } from '@nestjs/common';
+import { request } from 'http';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
@@ -33,9 +35,16 @@ export class UsersController {
   }
 
   @Get()
-  //@UseGuards(JwtAuthGuard)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
+  }
+
+  @Get('current')
+  @UseGuards(JwtAuthGuard)
+  async current(@Req() request) {
+    const { username } = request.user;
+    const user = await this.usersService.findByUsername(username);
+    return user;
   }
 
   @Get(':id')
@@ -43,8 +52,10 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string): Promise<void> {
-    return this.usersService.remove(id);
+  @Delete('remove')
+  async remove(@Req() request): Promise<void> {
+    const { username } = request.user;
+    const user = await this.usersService.findByUsername(username);
+    return this.usersService.remove(user.id);
   }
 }
