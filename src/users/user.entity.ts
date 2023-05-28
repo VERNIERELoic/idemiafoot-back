@@ -1,6 +1,6 @@
+import events from 'events';
+import { Events } from 'src/events/events.entity';
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { FriendRequestEntity } from './friend.request.entity';
-import { Friendship } from './friendship.entity';
 
 @Entity()
 export class User {
@@ -25,15 +25,7 @@ export class User {
   @Column()
   phone: string;
 
-  @OneToMany(() => FriendRequestEntity,(FriendRequestEntity) => FriendRequestEntity.creator)
-  sentFriendRequests: FriendRequestEntity[];
-
-  @OneToMany(() => FriendRequestEntity,(FriendRequestEntity) => FriendRequestEntity.receiver)
-  receivedFriendRequests: FriendRequestEntity[];
-
-  @OneToMany(() => Friendship, (friendship) => friendship.user)
-  friends: Friendship[];
-
-  @OneToMany(() => Friendship, (friendship) => friendship.friend)
-  friendOf: Friendship[];
+  @ManyToMany(() => Events, (events) => events.user)
+  events: Events[];
+  userEvents: any;
 }

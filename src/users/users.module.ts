@@ -1,14 +1,13 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FriendRequestEntity } from './friend.request.entity';
-import { Friendship } from './friendship.entity';
 import { User } from './user.entity';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, FriendRequestEntity, Friendship]),
+    TypeOrmModule.forFeature([User]),
   ],
   providers: [UsersService],
   exports: [UsersService],
