@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { userEvent } from './user-event.entity';
 import { EventsService } from 'src/events/events.service';
 import { UsersService } from 'src/users/users.service';
@@ -18,6 +18,8 @@ export class UserEventService {
         private userEventRepository: Repository<userEvent>,
         @InjectRepository(Events)
         private EventsRepository: Repository<Events>,
+        @InjectRepository(User)
+        private readonly usersRepository: Repository<User>,
     ) { }
 
     async addUserToEvent(userId: number, eventId: number): Promise<userEvent> {
@@ -36,8 +38,14 @@ export class UserEventService {
     }
 
     async getUsersByEventId(eventId: number): Promise<User[]> {
-        const userEvents = await this.userEventRepository.find({ where: { id: eventId } });
+        const userEvents = await this.userEventRepository
+            .createQueryBuilder("userEvent")
+            .leftJoinAndSelect("userEvent.user", "user")
+            .where("userEvent.eventId = :eventId", { eventId })
+            .getMany();
+
         const users = userEvents.map(userEvent => userEvent.user);
+
         return users;
     }
 }

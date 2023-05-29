@@ -7,9 +7,6 @@ import { User } from 'src/users/users.service';
 @Injectable()
 export class EventsService {
     constructor(
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
-
         @InjectRepository(Events)
         private readonly eventsRepository: Repository<Events>,
     ) { }
@@ -33,35 +30,5 @@ export class EventsService {
     async findAll(): Promise<Events[]> {
         return this.eventsRepository.find();
     }
-
-
-    // async addUserToEvent(userId: number, eventId: number): Promise<UserEvent> {
-    //     // Rechercher l'utilisateur et l'événement dans la base de données
-    //     const user = await this.usersRepository.findOne({ where: { id: userId } });
-    //     const event = await this.eventsRepository.findOne({ where: { id: eventId } });
-    
-    //     if (!user || !event) {
-    //         throw new Error('User or Event not found');
-    //     }
-    
-    //     // Créer une nouvelle entité UserEvent et la sauvegarder
-    //     const userEvent = new UserEvent();
-    //     userEvent.user = user;
-    //     userEvent.event = event;
-    //     return this.userEventRepository.save(userEvent);
-    // }
-    
-    // async getUsersByEventId(eventId: number): Promise<User[]> {
-    //     const event = await this.eventsRepository.findOne({ 
-    //       where: { id: eventId },
-    //       relations: ["user"]
-    //     });
-      
-    //     if (!event) {
-    //       throw new Error("Event not found");
-    //     }
-      
-    //     return event.user;
-    //   }
       
 }
