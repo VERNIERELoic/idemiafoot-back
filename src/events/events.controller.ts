@@ -46,15 +46,5 @@ export class EventsController {
         return this.eventsService.findOne(id);
     }
 
-    @Post('addUserToEvent')
-    @UseGuards(JwtAuthGuard)
-    async addUserToEvent(@Body('userId') userId: number, @Body('eventId') eventId: number) {
-        return this.eventsService.addUserToEvent(userId, eventId);
-    }
 
-    @Get('getUsersByEventId/:id')
-    @UseGuards(JwtAuthGuard)
-    async getUsersByEventId(@Param('eventId') eventId: number): Promise<User[]> {
-        return this.eventsService.getUsersByEventId(eventId);
-      }
 }

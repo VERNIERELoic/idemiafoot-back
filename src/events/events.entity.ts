@@ -1,6 +1,5 @@
 import { User } from 'src/users/user.entity';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Events {
@@ -12,9 +11,5 @@ export class Events {
 
   @Column()
   sport: string;
-
-  @ManyToMany(() => User, (user) => user.events)
-  @JoinTable()
-  user: User[];
 }
 
