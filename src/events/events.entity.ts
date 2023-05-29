@@ -1,4 +1,4 @@
-import { User } from 'src/users/user.entity';
+import { userEvent } from 'src/user-event/user-event.entity';
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -11,5 +11,8 @@ export class Events {
 
   @Column()
   sport: string;
+
+  @OneToMany(() => userEvent, (userEvent) => userEvent.event)
+  userEvents: userEvent[];
 }
 

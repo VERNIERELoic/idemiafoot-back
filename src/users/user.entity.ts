@@ -1,4 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { userEvent } from 'src/user-event/user-event.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -22,5 +24,8 @@ export class User {
 
   @Column()
   phone: string;
+
+  @OneToMany(() => userEvent, (userEvent) => userEvent.user)
+  userEvents: userEvent[];
 
 }
