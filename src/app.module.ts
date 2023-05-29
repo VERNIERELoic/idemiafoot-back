@@ -7,8 +7,6 @@ import { AuthService } from './auth/auth.service';
 import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { EventsModule } from './events/events.module';
-import { UserEventService } from './user-event/user-event.service';
-import { UserEventController } from './user-event/user-event.controller';
 import { UserEventModule } from './user-event/user-event.module';
 
 @Module({
@@ -29,8 +27,8 @@ import { UserEventModule } from './user-event/user-event.module';
     EventsModule,
     UserEventModule,
   ],
-  controllers: [AppController, UserEventController],
-  providers: [AuthService, AppService, UserEventService],
+  controllers: [AppController],
+  providers: [AuthService, AppService],
 
 })
 export class AppModule {}

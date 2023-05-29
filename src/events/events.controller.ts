@@ -5,18 +5,12 @@ import {
     Get,
     Param,
     Post,
-    ParseIntPipe,
     UseGuards,
-    Req,
-    Put,
-    ConflictException,
-    NotFoundException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { EventsService } from './events.service';
 import { CreateEventsDto } from './dto/create-event.dto';
 import { Events } from './events.entity';
-import { User } from 'src/users/user.entity';
 
 @Controller('events')
 export class EventsController {

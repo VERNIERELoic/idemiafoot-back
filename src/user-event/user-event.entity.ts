@@ -18,4 +18,5 @@ export class userEvent {
     @ManyToOne(() => Events, (event) => event.userEvents, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'eventId' })
     event: Events;
+    static user: User;
 }
