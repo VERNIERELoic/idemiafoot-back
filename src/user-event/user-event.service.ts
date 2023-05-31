@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { In, Repository } from 'typeorm';
@@ -27,7 +27,14 @@ export class UserEventService {
         const event = await this.eventsService.findOne(eventId)
 
         if (!user || !event) {
-            throw new Error('User or Event not found');
+            throw new HttpException('User or Event not found', HttpStatus.NOT_FOUND);
+        }
+
+        const usersInEvent = await this.getUsersByEventId(eventId);
+        const userExists = usersInEvent.find((existingUser) => existingUser.id === user.id);
+
+        if (userExists) {
+            throw new HttpException('User already in event', HttpStatus.NOT_ACCEPTABLE);
         }
 
         const userevent = new userEvent();
