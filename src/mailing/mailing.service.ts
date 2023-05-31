@@ -54,7 +54,7 @@ export class MailingService {
                 to: emails.join(', '), 
                 from: 'foot.idemia@gmail.com',
                 subject: 'Football event - @NoReply', // Subject line
-                template: 'action', // template file
+                template: 'newEventTemplate', // template file
             })
             .then((success) => {
                 console.log(success);
