@@ -10,7 +10,7 @@ import { UsersService } from 'src/users/users.service';
   imports: [
     TypeOrmModule.forFeature([User]),
   ],
-  providers: [MailingService, ConfigService, UsersService],
+  providers: [MailingService, ConfigService],
   controllers: [MailingController],
   exports: [MailingService],
 })

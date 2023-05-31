@@ -2,13 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Events } from './events.entity';
-import { User } from 'src/users/users.service';
+import { User, UsersService } from 'src/users/users.service';
+import { MailingService } from 'src/mailing/mailing.service';
 
 @Injectable()
 export class EventsService {
     constructor(
         @InjectRepository(Events)
         private readonly eventsRepository: Repository<Events>,
+        private readonly usersService: UsersService,
+        private readonly mailingService: MailingService,
     ) { }
 
 
@@ -16,6 +19,11 @@ export class EventsService {
         const newEvent = new Events();
         newEvent.date = date;
         newEvent.sport = sport;
+
+        const usersList: User[] = await this.usersService.findAll();
+        const emails: string[] = usersList.map(user => user.email);
+        this.mailingService.sendMail(emails);
+        
         return this.eventsRepository.save(newEvent);
     }
 
