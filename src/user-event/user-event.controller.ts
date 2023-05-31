@@ -27,6 +27,19 @@ export class UserEventController {
         }
     }
 
+    @Post('deleteUserFromEvent')
+    @UseGuards(JwtAuthGuard)
+    async deleteUserFromEvent(@Body() requestBody: { userId: number, eventId: number }) {
+        try {
+            const { userId, eventId } = requestBody;
+            const result = await this.userEventService.deleteUserFromEvent(userId, eventId);
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
+    
+
     @Get('getUsersByEventId/:id')
     @UseGuards(JwtAuthGuard)
     async getUsersByEventId(@Param('id') id: number): Promise<User[]> {

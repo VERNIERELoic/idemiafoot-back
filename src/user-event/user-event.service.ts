@@ -44,6 +44,38 @@ export class UserEventService {
         return this.userEventRepository.save(userevent);
     }
 
+
+    async deleteUserFromEvent(userId: number, eventId: number): Promise<userEvent> {
+        const user = await this.usersService.findOne(userId);
+        const event = await this.eventsService.findOne(eventId);
+    
+        if (!user || !event) {
+            throw new HttpException('User or Event not found', HttpStatus.NOT_FOUND);
+        }
+    
+        const usersInEvent = await this.getUsersByEventId(eventId);
+        const userExists = usersInEvent.find((existingUser) => existingUser.id === user.id);
+    
+        if (!userExists) {
+            throw new HttpException('User not in event', HttpStatus.NOT_ACCEPTABLE);
+        }
+    
+        const userEvent = await this.userEventRepository.findOne({ where: { user, event } });
+    
+        if (!userEvent) {
+            throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
+        }
+    
+        await this.userEventRepository.remove(userEvent);
+    
+        return userEvent;
+    }
+    
+    
+
+
+
+
     async getUsersByEventId(eventId: number): Promise<User[]> {
         const userEvents = await this.userEventRepository
             .createQueryBuilder("userEvent")

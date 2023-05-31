@@ -46,14 +46,14 @@ export class MailingService {
     }
 
 
-    public async sendMail() {
+    public async sendMail(emails: Array<any>) {
         await this.setTransport();
         this.mailerService
             .sendMail({
                 transporterName: 'gmail',
-                to: 'loic.verniere@icloud.com', 
+                to: emails.join(', '), 
                 from: 'foot.idemia@gmail.com',
-                subject: 'Football event', // Subject line
+                subject: 'Football event - @NoReply', // Subject line
                 template: 'action', // template file
             })
             .then((success) => {
@@ -63,7 +63,5 @@ export class MailingService {
                 console.log(err);
             });
     }
-
-
 }
 
