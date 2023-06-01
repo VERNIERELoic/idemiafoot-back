@@ -17,7 +17,7 @@ export class UserEventController {
     constructor(private readonly userEventService: UserEventService) { }
 
     @Post('addUserToEvent')
-    @UseGuards(JwtAuthGuard, UserIsSelfBodyGuard)
+    @UseGuards(JwtAuthGuard)
     async addUserToEvent(@Body() requestBody: { userId: number, eventId: number }) {
         try {
             const { userId, eventId } = requestBody;
@@ -39,7 +39,18 @@ export class UserEventController {
             throw new Error(error.message);
         }
     }
-    
+
+    @Post('confirmUser')
+    @UseGuards(JwtAuthGuard, UserIsSelfBodyGuard)
+    async confirmUser(@Body() requestBody: { userId: number, eventId: number }) {
+        try {
+            const { userId, eventId } = requestBody;
+            const result = await this.userEventService.confirmUser(userId, eventId);
+            return result;
+        } catch (error) {
+            throw new Error(error.message);
+        }
+    }
 
     @Get('getUsersByEventId/:id')
     @UseGuards(JwtAuthGuard)

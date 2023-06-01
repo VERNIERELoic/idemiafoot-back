@@ -16,10 +16,6 @@ export class UserEventService {
         private readonly usersService: UsersService,
         @InjectRepository(userEvent)
         private userEventRepository: Repository<userEvent>,
-        @InjectRepository(Events)
-        private EventsRepository: Repository<Events>,
-        @InjectRepository(User)
-        private readonly usersRepository: Repository<User>,
     ) { }
 
     async addUserToEvent(userId: number, eventId: number): Promise<userEvent> {
@@ -48,29 +44,28 @@ export class UserEventService {
     async deleteUserFromEvent(userId: number, eventId: number): Promise<userEvent> {
         const user = await this.usersService.findOne(userId);
         const event = await this.eventsService.findOne(eventId);
-    
+
         if (!user || !event) {
             throw new HttpException('User or Event not found', HttpStatus.NOT_FOUND);
         }
-    
+
         const usersInEvent = await this.getUsersByEventId(eventId);
         const userExists = usersInEvent.find((existingUser) => existingUser.id === user.id);
-    
+
         if (!userExists) {
             throw new HttpException('User not in event', HttpStatus.NOT_ACCEPTABLE);
         }
-    
+
         const userEvent = await this.userEventRepository.findOne({ where: { user, event } });
-    
+
         if (!userEvent) {
             throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
         }
-    
+
         await this.userEventRepository.remove(userEvent);
-    
         return userEvent;
     }
-    
+
     async getUsersByEventId(eventId: number): Promise<User[]> {
         const userEvents = await this.userEventRepository
             .createQueryBuilder("userEvent")
@@ -79,7 +74,23 @@ export class UserEventService {
             .getMany();
 
         const users = userEvents.map(userEvent => userEvent.user);
-
         return users;
     }
+
+    async confirmUser(userId: number, eventId: number): Promise<userEvent> {
+        const user = await this.usersService.findOne(userId);
+        const event = await this.eventsService.findOne(eventId);
+        const userEvent = await this.userEventRepository.findOne({ where: { user, event } });
+
+        if (!userEvent) {
+            throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
+        }
+
+        userEvent.confirmed = true;
+        await this.userEventRepository.save(userEvent);
+
+        return userEvent;
+    }
+
+
 }

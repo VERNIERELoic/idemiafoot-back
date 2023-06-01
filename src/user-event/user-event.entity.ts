@@ -5,7 +5,6 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDa
 @Entity('user-events')
 export class userEvent {
     @PrimaryGeneratedColumn()
-    
     id: number;
 
     @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP(6)" })
@@ -14,9 +13,12 @@ export class userEvent {
     @ManyToOne(() => User, (user) => user.userEvents, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'userId' })
     user: User;
-  
+
     @ManyToOne(() => Events, (event) => event.userEvents, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'eventId' })
     event: Events;
     static user: User;
+
+    @Column({ default: false })
+    confirmed: boolean;
 }
