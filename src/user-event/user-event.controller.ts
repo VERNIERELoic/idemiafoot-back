@@ -10,13 +10,14 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserEventService } from './user-event.service';
 import { User } from 'src/users/user.entity';
+import { UserIsSelfBodyGuard } from 'src/auth/guards/user-is-self-body-guard';
 
 @Controller('user-event')
 export class UserEventController {
     constructor(private readonly userEventService: UserEventService) { }
 
     @Post('addUserToEvent')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserIsSelfBodyGuard)
     async addUserToEvent(@Body() requestBody: { userId: number, eventId: number }) {
         try {
             const { userId, eventId } = requestBody;
@@ -28,7 +29,7 @@ export class UserEventController {
     }
 
     @Post('deleteUserFromEvent')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserIsSelfBodyGuard)
     async deleteUserFromEvent(@Body() requestBody: { userId: number, eventId: number }) {
         try {
             const { userId, eventId } = requestBody;

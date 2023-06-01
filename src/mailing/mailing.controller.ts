@@ -5,6 +5,5 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 
 @Controller('mailing')
 export class MailingController {
-
     constructor(readonly mailingService: MailingService) { }
 }

@@ -11,11 +11,13 @@ import {
   Put,
   ConflictException,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
+import { UserIsSelfGuard } from 'src/auth/guards/user-is-self-guard';
 
 @Controller('users')
 export class UsersController {
@@ -58,8 +60,9 @@ export class UsersController {
   }
 
   @Delete('remove/:id')
-  @UseGuards(JwtAuthGuard)
-  remove(@Param("id") id: string): Promise<any> {
-  return this.usersService.remove(id);
+  @UseGuards(JwtAuthGuard, UserIsSelfGuard)
+  async remove(@Param('id') id: string): Promise<any> {
+    return this.usersService.remove(id);
   }
+
 }

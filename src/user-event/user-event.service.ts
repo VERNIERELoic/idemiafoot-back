@@ -71,11 +71,6 @@ export class UserEventService {
         return userEvent;
     }
     
-    
-
-
-
-
     async getUsersByEventId(eventId: number): Promise<User[]> {
         const userEvents = await this.userEventRepository
             .createQueryBuilder("userEvent")
