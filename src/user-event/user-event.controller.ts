@@ -11,6 +11,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { UserEventService } from './user-event.service';
 import { User } from 'src/users/user.entity';
 import { UserIsSelfBodyGuard } from 'src/auth/guards/user-is-self-body-guard';
+import { userEvent } from './user-event.entity';
 
 @Controller('user-event')
 export class UserEventController {
@@ -56,5 +57,11 @@ export class UserEventController {
     @UseGuards(JwtAuthGuard)
     async getUsersByEventId(@Param('id') id: number): Promise<User[]> {
         return this.userEventService.getUsersByEventId(id);
+    }
+
+    @Get('getUserEventsByEventId/:id')
+    @UseGuards(JwtAuthGuard)
+    async getUserEventsByEventId(@Param('id') id: number): Promise<userEvent[]> {
+        return this.userEventService.getUserEventsByEventId(id);
     }
 }

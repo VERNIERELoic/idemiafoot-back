@@ -28,22 +28,27 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Post('findByUsername')
-  @UseGuards(JwtAuthGuard)
-  async findByUsername(@Body() body: { username: string }) {
-    const user = await this.usersService.findByUsername(body.username);
-    if (user) {
-      return user;
-    } else {
-      return { message: 'User not found' };
-    }
-  }
 
-  @Get()
-  @UseGuards(JwtAuthGuard)
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
-  }
+  // WARNING ! ----- DEBUG ONLY -----
+  
+  // @Post('findByUsername')
+  // @UseGuards(JwtAuthGuard)
+  // async findByUsername(@Body() body: { username: string }) {
+  //   const user = await this.usersService.findByUsername(body.username);
+  //   if (user) {
+  //     return user;
+  //   } else {
+  //     return { message: 'User not found' };
+  //   }
+  // }
+
+  // @Get()
+  // @UseGuards(JwtAuthGuard)
+  // findAll(): Promise<User[]> {
+  //   return this.usersService.findAll();
+  // }
+
+  // WARNING ! ----- DEBUG ONLY -----
 
   @Get('current')
   @UseGuards(JwtAuthGuard)

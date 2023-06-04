@@ -1,7 +1,6 @@
 import { Events } from 'src/events/events.entity';
 import { User } from 'src/users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, ManyToMany, JoinTable } from 'typeorm';
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, ManyToMany, JoinTable, AfterLoad, BeforeUpdate, BeforeInsert } from 'typeorm';
 @Entity('user-events')
 export class userEvent {
     @PrimaryGeneratedColumn()
@@ -17,8 +16,25 @@ export class userEvent {
     @ManyToOne(() => Events, (event) => event.userEvents, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'eventId' })
     event: Events;
-    static user: User;
+
+    @Column()
+    userId: number;
+
+    @Column()
+    eventId: number;
+
+    @Column({ nullable: true })
+    username: string;
 
     @Column({ default: false })
     confirmed: boolean;
+
+    @BeforeInsert()
+    @BeforeUpdate()
+    updateUsername() {
+        if (this.user && this.user.username) {
+            this.username = this.user.username;
+        }
+    }
+
 }
