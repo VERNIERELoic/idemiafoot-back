@@ -1,16 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
-import { In, Repository } from 'typeorm';
-import { userEvent } from './user-event.entity';
-import { EventsService } from 'src/events/events.service';
-import { UsersService } from 'src/users/users.service';
-import { Events } from 'src/events/events.entity';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Events } from "src/events/events.entity";
+import { EventsService } from "src/events/events.service";
+import { User, UsersService } from "src/users/users.service";
+import { Repository } from "typeorm";
+import { userEvent } from "./user-event.entity";
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class UserEventService {
-    userService: any;
-    eventService: any;
     constructor(
         private readonly eventsService: EventsService,
         private readonly usersService: UsersService,
@@ -18,50 +16,49 @@ export class UserEventService {
         private userEventRepository: Repository<userEvent>,
     ) { }
 
-    async addUserToEvent(userId: number, eventId: number): Promise<userEvent> {
-        const user = await this.usersService.findOne(userId)
-        const event = await this.eventsService.findOne(eventId)
-
+    private async validateUserAndEvent(userId: number, eventId: number) {
+        const user = await this.usersService.findOne(userId);
+        const event = await this.eventsService.findOne(eventId);
         if (!user || !event) {
             throw new HttpException('User or Event not found', HttpStatus.NOT_FOUND);
         }
+        return { user, event };
+    }
 
+    private async checkUserExistsInEvent(user: User, eventId: number) {
         const usersInEvent = await this.getUsersByEventId(eventId);
-        const userExists = usersInEvent.find((existingUser) => existingUser.id === user.id);
+        return usersInEvent.some((existingUser) => existingUser.id === user.id);
+    }
 
-        if (userExists) {
+    private async findUserEvent(user: User, event: Events) {
+        const userEvent = await this.userEventRepository.findOne({ where: { userId: user.id, eventId: event.id } });
+        if (!userEvent) {
+            throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
+        }
+        return userEvent;
+    }
+
+    async addUserToEvent(userId: number, eventId: number): Promise<userEvent> {
+        const { user, event } = await this.validateUserAndEvent(userId, eventId);
+
+        if (await this.checkUserExistsInEvent(user, eventId)) {
             throw new HttpException('User already in event', HttpStatus.NOT_ACCEPTABLE);
         }
 
         const userevent = new userEvent();
         userevent.user = user;
         userevent.event = event;
-
         return this.userEventRepository.save(userevent);
     }
 
-
     async deleteUserFromEvent(userId: number, eventId: number): Promise<userEvent> {
-        const user = await this.usersService.findOne(userId);
-        const event = await this.eventsService.findOne(eventId);
+        const { user, event } = await this.validateUserAndEvent(userId, eventId);
 
-        if (!user || !event) {
-            throw new HttpException('User or Event not found', HttpStatus.NOT_FOUND);
-        }
-
-        const usersInEvent = await this.getUsersByEventId(eventId);
-        const userExists = usersInEvent.find((existingUser) => existingUser.id === user.id);
-
-        if (!userExists) {
+        if (!(await this.checkUserExistsInEvent(user, eventId))) {
             throw new HttpException('User not in event', HttpStatus.NOT_ACCEPTABLE);
         }
 
-        const userEvent = await this.userEventRepository.findOne({ where: { user, event } });
-
-        if (!userEvent) {
-            throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
-        }
-
+        const userEvent = await this.findUserEvent(user, event);
         await this.userEventRepository.remove(userEvent);
         return userEvent;
     }
@@ -72,25 +69,40 @@ export class UserEventService {
             .leftJoinAndSelect("userEvent.user", "user")
             .where("userEvent.eventId = :eventId", { eventId })
             .getMany();
+        return userEvents.map(userEvent => userEvent.user);
+    }
 
-        const users = userEvents.map(userEvent => userEvent.user);
-        return users;
+    async getUserEventsByEventId(eventId: number): Promise<userEvent[]> {
+        const userEvents = await this.userEventRepository
+            .createQueryBuilder("userEvent")
+            .leftJoinAndSelect("userEvent.user", "user")
+            .where("userEvent.eventId = :eventId", { eventId })
+            .getMany();
+
+        return userEvents;
     }
 
     async confirmUser(userId: number, eventId: number): Promise<userEvent> {
-        const user = await this.usersService.findOne(userId);
-        const event = await this.eventsService.findOne(eventId);
-        const userEvent = await this.userEventRepository.findOne({ where: { user, event } });
+        const { user, event } = await this.validateUserAndEvent(userId, eventId);
+        const userEvent = await this.findUserEvent(user, event);
 
-        if (!userEvent) {
-            throw new HttpException('UserEvent not found', HttpStatus.NOT_FOUND);
+        const currentDate = new Date();
+        console.log(currentDate);
+
+        const eventDate = new Date(event.date);
+        const confirmationCutoff = new Date(eventDate.getTime() - (4 * 60 * 60 * 1000)); // 4 hours before event
+        console.log(confirmationCutoff);
+        if (currentDate < confirmationCutoff) {
+            throw new HttpException('Cannot confirm event. Confirmations are only allowed 4 hours before the event start time', HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        if (userEvent.confirmed == true) {
+            throw new HttpException('Presence already confirmed', HttpStatus.NOT_ACCEPTABLE);
+            throw new BadRequestException('');
         }
 
         userEvent.confirmed = true;
         await this.userEventRepository.save(userEvent);
-
         return userEvent;
     }
-
-
 }
