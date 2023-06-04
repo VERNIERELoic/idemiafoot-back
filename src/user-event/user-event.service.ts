@@ -1,10 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Events } from "src/events/events.entity";
 import { EventsService } from "src/events/events.service";
 import { User, UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { userEvent } from "./user-event.entity";
+import * as moment from 'moment-timezone';
 
 @Injectable()
 export class UserEventService {
@@ -36,7 +37,7 @@ export class UserEventService {
         }
         return userEvent;
     }
-    
+
     async addUserToEvent(userId: number, eventId: number): Promise<userEvent> {
         const { user, event } = await this.validateUserAndEvent(userId, eventId);
 
@@ -52,11 +53,11 @@ export class UserEventService {
 
     async deleteUserFromEvent(userId: number, eventId: number): Promise<userEvent> {
         const { user, event } = await this.validateUserAndEvent(userId, eventId);
-        
+
         if (!(await this.checkUserExistsInEvent(user, eventId))) {
             throw new HttpException('User not in event', HttpStatus.NOT_ACCEPTABLE);
         }
-        
+
         const userEvent = await this.findUserEvent(user, event);
         await this.userEventRepository.remove(userEvent);
         return userEvent;
@@ -77,13 +78,29 @@ export class UserEventService {
             .leftJoinAndSelect("userEvent.user", "user")
             .where("userEvent.eventId = :eventId", { eventId })
             .getMany();
-    
+
         return userEvents;
     }
-    
+
     async confirmUser(userId: number, eventId: number): Promise<userEvent> {
         const { user, event } = await this.validateUserAndEvent(userId, eventId);
         const userEvent = await this.findUserEvent(user, event);
+
+        const currentDate = new Date();
+        console.log(currentDate);
+
+        const eventDate = new Date(event.date);
+        const confirmationCutoff = new Date(eventDate.getTime() - (4 * 60 * 60 * 1000)); // 4 hours before event
+        console.log(confirmationCutoff);
+        if (currentDate < confirmationCutoff) {
+            throw new HttpException('Cannot confirm event. Confirmations are only allowed 4 hours before the event start time', HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        if (userEvent.confirmed == true) {
+            throw new HttpException('Presence already confirmed', HttpStatus.NOT_ACCEPTABLE);
+            throw new BadRequestException('');
+        }
+
         userEvent.confirmed = true;
         await this.userEventRepository.save(userEvent);
         return userEvent;
