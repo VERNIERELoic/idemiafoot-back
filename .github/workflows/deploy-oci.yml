@@ -33,6 +33,8 @@ jobs:
           ssh ubuntu@129.151.232.234 "rm -rf ~/idemiafoot-back"
           ssh ubuntu@129.151.232.234 "if [ ! -d ~/idemiafoot-back ]; then mkdir -p ~/idemiafoot-back; fi"
           scp docker-compose.yml ubuntu@129.151.232.234:~/idemiafoot-back
+          ssh ubuntu@129.151.232.234 "docker stop $(docker ps -q --filter "expose=3306")"
+          ssh ubuntu@129.151.232.234 "docker rm $(docker ps -a -q --filter "expose=3306")"
           ssh ubuntu@129.151.232.234 "export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} && export MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} && cd ~/idemiafoot-back && docker-compose pull && docker-compose up -d"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:latest && docker run -d -p 3000:3000 -e CLIENT_ID=${{ secrets.CLIENT_ID }} -e CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} -e EMAIL=${{ secrets.EMAIL }} -e REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }} loicverniere/idemiafoot-back:latest"
         env:
