@@ -85,20 +85,16 @@ export class UserEventService {
     async confirmUser(userId: number, eventId: number): Promise<userEvent> {
         const { user, event } = await this.validateUserAndEvent(userId, eventId);
         const userEvent = await this.findUserEvent(user, event);
-
         const currentDate = new Date();
-        console.log(currentDate);
-
         const eventDate = new Date(event.date);
         const confirmationCutoff = new Date(eventDate.getTime() - (4 * 60 * 60 * 1000)); // 4 hours before event
-        console.log(confirmationCutoff);
+
         if (currentDate < confirmationCutoff) {
             throw new HttpException('Cannot confirm event. Confirmations are only allowed 4 hours before the event start time', HttpStatus.NOT_ACCEPTABLE);
         }
 
         if (userEvent.confirmed == true) {
             throw new HttpException('Presence already confirmed', HttpStatus.NOT_ACCEPTABLE);
-            throw new BadRequestException('');
         }
 
         userEvent.confirmed = true;

@@ -31,6 +31,7 @@ export class EventsService {
         await this.eventsRepository.delete(id);
     }
 
+    
     findOne(id: number): Promise<Events> {
         return this.eventsRepository.findOne({ where: { id: id } });
     }
