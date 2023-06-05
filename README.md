@@ -10,3 +10,6 @@ MYSQL_ROOT_PASSWORD=
 then run:
 docker-compose up -d
 npm run start:dev
+
+
+prod:
