@@ -36,7 +36,10 @@ jobs:
           ssh ubuntu@129.151.232.234 "docker ps -a -q | xargs -r docker stop --force"
           ssh ubuntu@129.151.232.234 "docker ps -a -q | xargs -r docker rm --force"
           ssh ubuntu@129.151.232.234 "docker system prune --all --force"
-          sudo kill $(sudo lsof -t -i:3306)
+          ssh ubuntu@129.151.232.234 "pid=$(sudo lsof -t -i:3306)
+            if [ -n "$pid" ]; then
+            udo kill $pid
+            fi"
           ssh ubuntu@129.151.232.234 "export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} && export MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} && cd ~/idemiafoot-back && docker-compose pull && docker-compose up -d"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:latest && docker run -d -p 3000:3000 -e CLIENT_ID=${{ secrets.CLIENT_ID }} -e CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} -e EMAIL=${{ secrets.EMAIL }} -e REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }} loicverniere/idemiafoot-back:latest"
         env:
