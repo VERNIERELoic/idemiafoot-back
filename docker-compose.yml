@@ -5,6 +5,7 @@ services:
     image: mysql:8
     restart: always
     environment:
+      MYSQL_USER: ${MYSQL_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
     volumes:
@@ -23,7 +24,7 @@ services:
         - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
         - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
       volumes:
-       - "~/.env:/app"
+       - "~/.env:/app/.env"
 
   traefik:
     image: "traefik:v2.10"
