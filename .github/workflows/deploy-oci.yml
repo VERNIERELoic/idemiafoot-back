@@ -32,10 +32,11 @@ jobs:
           ssh-keyscan 129.151.232.234 >> ~/.ssh/known_hosts
           ssh ubuntu@129.151.232.234 "if [ ! -d ~/idemiafoot-back ]; then mkdir -p ~/idemiafoot-back; fi"
           scp docker-compose.yml ubuntu@129.151.232.234:~/idemiafoot-back
+          ssh ubuntu@129.151.232.234 "source ~/.env"
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker stop idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker rm idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:main"
-          ssh ubuntu@129.151.232.234 "export MYSQL_ROOT_PASSWORD=*** && export MYSQL_DATABASE=*** && export CLIENT_ID=*** && export CLIENT_SECRET=*** && export EMAIL=*** && export REFRESH_TOKEN=*** && cd ~/idemiafoot-back && docker-compose pull && docker-compose up -d"
+          ssh ubuntu@129.151.232.234 "export MYSQL_ROOT_PASSWORD=${{ secret.MYSQL_ROOT_PASSWORD }} && export MYSQL_DATABASE=${{ secret.MYSQL_DATABASE }} && cd ~/idemiafoot-back && docker-compose pull && docker-compose up -d"
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}

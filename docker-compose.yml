@@ -15,13 +15,15 @@ services:
   idemiafoot-back:
       image: loicverniere/idemiafoot-back:main
       restart: always
-      environment:
-        CLIENT_ID: ${CLIENT_ID}
-        CLIENT_SECRET: ${CLIENT_SECRET}
-        REFRESH_TOKEN: ${REFRESH_TOKEN}
-        EMAIL: ${EMAIL}
-      ports:
-        - "3000:3000"
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.idemiafoot-back.rule=Host(`api.foot-idemia.fr`)"
+        - "traefik.http.routers.idemiafoot-back.entrypoints=websecure"
+        - "traefik.http.routers.idemiafoot-back.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
+        - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
+      volumes:
+       - "~/.env:/app"
 
   traefik:
     image: "traefik:v2.10"
@@ -31,26 +33,17 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
       - "--certificatesresolvers.letsencryptresolver.acme.httpChallenge=true"
       - "--certificatesresolvers.letsencryptresolver.acme.httpChallenge.entrypoint=web"
       - "--certificatesresolvers.letsencryptresolver.acme.email=foot.idemia@gmail.com"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
     ports:
+      - "80:80"
       - "443:443"
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-  whoami:
-    image: "traefik/whoami"
-    container_name: "simple-service"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`api.foot-idemia.fr`)"
-      - "traefik.http.routers.whoami.entrypoints=websecure"
-      - "traefik.http.routers.whoami.tls.certresolver=letsencryptresolver"
-      - "traefik.http.routers.whoami.middlewares=redirect@docker"
-
 volumes:
   idemiafoot-data:
-  
