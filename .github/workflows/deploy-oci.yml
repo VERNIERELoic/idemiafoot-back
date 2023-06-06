@@ -31,14 +31,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan 129.151.232.234 >> ~/.ssh/known_hosts
           ssh ubuntu@129.151.232.234 "if [ ! -d ~/idemiafoot-back ]; then mkdir -p ~/idemiafoot-back; fi"
-          ssh ubuntu@129.151.232.234 "
-            if [ "$(docker ps -aq -f name=idemiafoot-back)" ]; then
-              docker stop idemiafoot-back
-            fi"
-          ssh ubuntu@129.151.232.234 "
-            if [ "$(docker ps -aq -f name=idemiafoot-back)" ]; then
-              docker rm idemiafoot-back
-            fi"
+          ssh ubuntu@129.151.232.234 "if [ "$(docker ps -aq -f name=idemiafoot-back)" ]; then docker stop idemiafoot-back fi"
+          ssh ubuntu@129.151.232.234 "if [ "$(docker ps -aq -f name=idemiafoot-back)" ]; then docker rm idemiafoot-back fi"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:latest"
           ssh ubuntu@129.151.232.234 "export MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} && export MYSQL_DATABASE=${{ secrets.MYSQL_DATABASE }} && export CLIENT_ID=${{ secrets.CLIENT_ID }} && export CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} && export EMAIL=${{ secrets.EMAIL }} && export REFRESH_TOKEN=${{ secrets.REFRESH_TOKEN }} && cd ~/idemiafoot-back && docker-compose pull && docker-compose up -d"
         env:
