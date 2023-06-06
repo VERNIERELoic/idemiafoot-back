@@ -1,24 +1,27 @@
 version: "3.3"
 
 services:
-  mysql:
-    image: mysql:8
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    ports:
-      - "3306:3306"
-
   db-idemiafoot:
     image: mysql:8
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - idemiafoot-data:/var/lib/mysql
     ports:
       - "3306:3306"
 
+  idemiafoot-back:
+      image: loicverniere/idemiafoot-back:latest
+      restart: always
+      environment:
+        CLIENT_ID: ${CLIENT_ID}
+        CLIENT_SECRET: ${CLIENT_SECRET}
+        REFRESH_TOKEN: ${REFRESH_TOKEN}
+        EMAIL: ${EMAIL}
+      ports:
+        - "3000:3000"
 
   traefik:
     image: "traefik:v2.10"
@@ -27,16 +30,13 @@ services:
       - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.letsencryptresolver.acme.httpChallenge=true"
       - "--certificatesresolvers.letsencryptresolver.acme.httpChallenge.entrypoint=web"
       - "--certificatesresolvers.letsencryptresolver.acme.email=foot.idemia@gmail.com"
       - "--certificatesresolvers.letsencryptresolver.acme.storage=/letsencrypt/acme.json"
     ports:
-      - "80:80"
       - "443:443"
-      - "8080:8080"
     volumes:
       - "./letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -50,3 +50,7 @@ services:
       - "traefik.http.routers.whoami.entrypoints=websecure"
       - "traefik.http.routers.whoami.tls.certresolver=letsencryptresolver"
       - "traefik.http.routers.whoami.middlewares=redirect@docker"
+
+volumes:
+  idemiafoot-data:
+  
