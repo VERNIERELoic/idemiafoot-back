@@ -30,7 +30,7 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan 129.151.232.234 >> ~/.ssh/known_hosts
-          ssh ubuntu@129.151.232.234 "rm -rf ~/idemiafoot-back"
+          ssh ubuntu@129.151.232.234 "sudo rm -rf ~/idemiafoot-back"
           ssh ubuntu@129.151.232.234 "if [ ! -d ~/idemiafoot-back ]; then mkdir -p ~/idemiafoot-back; fi"
           scp docker-compose.yml ubuntu@129.151.232.234:~/idemiafoot-back
           ssh ubuntu@129.151.232.234 "docker stop $(docker ps -q --filter "expose=3306")"
