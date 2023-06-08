@@ -1,3 +1,4 @@
+import { Teams } from 'src/teams/teams.entity';
 import { userEvent } from 'src/user-event/user-event.entity';
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 

@@ -12,6 +12,9 @@ import { MailingModule } from './mailing/mailing.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TeamsService } from './teams/teams.service';
+import { TeamsController } from './teams/teams.controller';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -50,9 +53,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     EventsModule,
     UserEventModule,
     MailingModule,
+    TeamsModule,
   ],
-  controllers: [AppController],
-  providers: [AuthService, AppService],
+  controllers: [AppController, TeamsController],
+  providers: [AuthService, AppService, TeamsService],
 })
 
 export class AppModule { }
