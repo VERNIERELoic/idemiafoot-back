@@ -19,13 +19,20 @@ export class EventsService {
         const newEvent = new Events();
         newEvent.date = date;
         newEvent.sport = sport;
-
+    
         const usersList: User[] = await this.usersService.findAll();
         const emails: string[] = usersList.map(user => user.email);
-        this.mailingService.sendMail(emails);
-        
+    
+        try {
+            await this.mailingService.sendMail(emails);
+        } catch (error) {
+            console.error('Failed to send mail:', error);
+            return this.eventsRepository.save(newEvent);
+        }
+    
         return this.eventsRepository.save(newEvent);
     }
+    
 
     async deleteEvent(id: number): Promise<void> {
         await this.eventsRepository.delete(id);
