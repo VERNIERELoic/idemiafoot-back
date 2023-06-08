@@ -28,6 +28,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Put('update/:id')
+  @UseGuards(JwtAuthGuard, UserIsSelfGuard)
+  async update(
+    @Param('id') id: number,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<User> {
+    return await this.usersService.update(id, createUserDto);
+  }
 
   // WARNING ! ----- DEBUG ONLY -----
   
