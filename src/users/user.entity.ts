@@ -1,4 +1,5 @@
 
+import { Teams } from 'src/teams/teams.entity';
 import { userEvent } from 'src/user-event/user-event.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -27,4 +28,7 @@ export class User {
 
   @OneToMany(() => userEvent, (userEvent) => userEvent.user)
   userEvents: userEvent[];
+
+  @OneToMany(() => Teams, (teams) => teams.user)
+  Teams: Teams[];
 }

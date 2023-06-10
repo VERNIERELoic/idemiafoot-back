@@ -7,11 +7,12 @@ import { UsersModule } from 'src/users/users.module';
 import { EventsModule } from 'src/events/events.module';
 import { Events } from 'src/events/events.entity';
 import { User } from 'src/users/user.entity';
+import { Teams } from 'src/teams/teams.entity';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([userEvent, Events, User]),
+    TypeOrmModule.forFeature([userEvent, Events, User, Teams]),
     forwardRef(() => UsersModule),
     forwardRef(() => EventsModule),
   ],

@@ -5,7 +5,6 @@ import { EventsService } from "src/events/events.service";
 import { User, UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { userEvent } from "./user-event.entity";
-import * as moment from 'moment-timezone';
 
 @Injectable()
 export class UserEventService {
