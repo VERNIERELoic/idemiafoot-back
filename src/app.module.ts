@@ -26,7 +26,7 @@ import { TeamsModule } from './teams/teams.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: "mysql",
-        host: configService.get('DB_HOST')?? "localhost",
+        host: configService.get('DB_HOST') ?? "localhost",
         port: 3306,
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),

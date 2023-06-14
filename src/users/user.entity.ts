@@ -1,7 +1,7 @@
 
 import { Teams } from 'src/teams/teams.entity';
 import { userEvent } from 'src/user-event/user-event.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -29,6 +29,7 @@ export class User {
   @OneToMany(() => userEvent, (userEvent) => userEvent.user)
   userEvents: userEvent[];
 
-  @OneToMany(() => Teams, (teams) => teams.user)
-  Teams: Teams[];
+  @ManyToMany(() => Teams, (team) => team.users)
+  @JoinTable()
+  teams: Teams[];
 }
