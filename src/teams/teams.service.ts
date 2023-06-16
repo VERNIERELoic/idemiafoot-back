@@ -43,5 +43,22 @@ export class TeamsService {
     }
 
 
+    async addUserToTeam(teamId: number, userId: number): Promise<Teams> {
+        const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users"] });
+        if (!team) {
+            throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
+        }
+
+        const user = await this.usersService.findOne(userId);
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+
+        team.users.push(user);
+
+        return this.teamsRepository.save(team);
+    }
+
+
 
 }
