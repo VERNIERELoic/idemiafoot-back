@@ -9,6 +9,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Teams } from 'src/teams/teams.entity';
 import { TeamsService } from './teams.service';
+import { User } from 'src/users/user.entity';
 
 @Controller('teams')
 export class TeamsController {
@@ -31,9 +32,14 @@ export class TeamsController {
         return await this.teamsService.getTeamsByEvent(eventId);
     }
 
-    @Post('addUsertoTeam')
+    @Post('addUserToTeam')
     @UseGuards(JwtAuthGuard)
-    async addUserToTeam(@Body('teamId') teamId: number, @Body('userId') userId: number): Promise<Teams> {
-        return this.teamsService.addUserToTeam(teamId, userId);
+    async addUsersToTeam(@Body('teamId') teamId: number, @Body('userIds') userIds: number[]): Promise<Teams> {
+        return this.teamsService.addUsersToTeam(teamId, userIds);
+    }
+
+    @Post('getUsersByTeam')
+    async getUsersByTeam(@Body('teamId') teamId: number): Promise<User[]> {
+        return this.teamsService.getUsersByTeam(teamId);
     }
 }
