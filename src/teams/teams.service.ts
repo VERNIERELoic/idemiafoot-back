@@ -49,7 +49,6 @@ export class TeamsService {
             throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
         }
 
-        // Get the users to add to the team
         const usersToAdd = [];
         for (const userId of userIds) {
             const user = await this.usersService.findOne(userId);
@@ -63,7 +62,6 @@ export class TeamsService {
             usersToAdd.push(user);
         }
 
-        // Update the users of the team
         team.users = usersToAdd;
 
         return this.teamsRepository.save(team);
