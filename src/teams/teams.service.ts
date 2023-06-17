@@ -42,35 +42,35 @@ export class TeamsService {
         return this.teamsRepository.find({ where: { event: { id: eventId } } });
     }
 
+
     async addUsersToTeam(teamId: number, userIds: number[]): Promise<Teams> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users"] });
         if (!team) {
             throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
         }
 
+        // Get the users to add to the team
+        const usersToAdd = [];
         for (const userId of userIds) {
             const user = await this.usersService.findOne(userId);
             if (!user) {
                 throw new HttpException(`User with id ${userId} not found`, HttpStatus.NOT_FOUND);
             }
-
-            if (!team.users.find(u => u.id === user.id)) {
-                team.users.push(user);
-            }
-        }
-
-        team.users = team.users.filter(user => userIds.includes(user.id));
-
-        for (const user of team.users) {
             const otherTeam = await this.teamsRepository.findOne({ where: { users: { id: user.id } }, relations: ["users"] });
             if (otherTeam && otherTeam.id !== team.id) {
-                otherTeam.users = otherTeam.users.filter(u => u.id !== user.id);
-                await this.teamsRepository.save(otherTeam);
+                throw new HttpException(`User with id ${userId} is already in team ${otherTeam.id}`, HttpStatus.CONFLICT);
             }
+            usersToAdd.push(user);
         }
+
+        // Update the users of the team
+        team.users = usersToAdd;
 
         return this.teamsRepository.save(team);
     }
+
+
+
 
 
     async getUsersByTeam(teamId: number): Promise<User[]> {
