@@ -3,6 +3,7 @@ import {
     Controller,
     Get,
     Param,
+    ParseIntPipe,
     Post,
     UseGuards,
 } from '@nestjs/common';
@@ -41,5 +42,10 @@ export class TeamsController {
     @Post('getUsersByTeam')
     async getUsersByTeam(@Body('teamId') teamId: number): Promise<User[]> {
         return this.teamsService.getUsersByTeam(teamId);
+    }
+
+    @Get('getFreePlayers/:id')
+    async getFreePlayers(@Param('eventId') eventId: number): Promise<User[]> {
+      return this.teamsService.getFreePlayers(eventId);
     }
 }

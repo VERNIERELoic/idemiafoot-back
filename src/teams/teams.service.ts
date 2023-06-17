@@ -42,6 +42,22 @@ export class TeamsService {
         return this.teamsRepository.find({ where: { event: { id: eventId } } });
     }
 
+    async getFreePlayers(eventId: number): Promise<User[]> {
+        const event = await this.eventsService.findOne(eventId);
+        if (!event) {
+            throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
+        }
+
+        const teams = await this.teamsRepository.find({ where: { event: { id: eventId } }, relations: ["users"] });
+
+        const teamUserIds = teams.flatMap((team) => team.users.map((user) => user.id));
+
+        const allUsers = await this.usersService.findAll();
+
+        const freePlayers = allUsers.filter((user) => !teamUserIds.includes(user.id));
+
+        return freePlayers;
+    }
 
     async addUsersToTeam(teamId: number, userIds: number[]): Promise<Teams> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users"] });
@@ -66,10 +82,6 @@ export class TeamsService {
 
         return this.teamsRepository.save(team);
     }
-
-
-
-
 
     async getUsersByTeam(teamId: number): Promise<User[]> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users"] });
