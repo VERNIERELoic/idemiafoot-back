@@ -51,15 +51,10 @@ export class TeamsService {
         }
 
         const eventUsers = await this.userEventService.getUsersByEventId(eventId);
-
-        console.log(eventId, eventUsers);
-
         const teams = await this.teamsRepository.find({ where: { event: { id: eventId } }, relations: ["users"] });
         const teamUserIds = teams.flatMap((team) => team.users.map((user) => user.id));
         const freePlayers = eventUsers.filter((user) => !teamUserIds.includes(user.id));
         console.log(typeof eventUsers, Array.isArray(eventUsers));
-
-        console.log(freePlayers);
 
         return freePlayers;
     }
