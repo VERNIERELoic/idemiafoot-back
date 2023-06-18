@@ -40,12 +40,15 @@ export class TeamsController {
     }
 
     @Post('getUsersByTeam')
+    @UseGuards(JwtAuthGuard)
     async getUsersByTeam(@Body('teamId') teamId: number): Promise<User[]> {
         return this.teamsService.getUsersByTeam(teamId);
     }
 
-    @Get('getFreePlayers/:id')
-    async getFreePlayers(@Param('eventId') eventId: number): Promise<User[]> {
+    @Post('getFreePlayers')
+    @UseGuards(JwtAuthGuard)
+    async getFreePlayers(@Body('eventId') eventId: number): Promise<User[]> {
+        console.log(eventId);
       return this.teamsService.getFreePlayers(eventId);
     }
 }

@@ -4,12 +4,14 @@ import { EventsService } from 'src/events/events.service';
 import { User, UsersService } from 'src/users/users.service';
 import { Repository } from 'typeorm';
 import { Teams } from './teams.entity';
+import { UserEventService } from 'src/user-event/user-event.service';
 
 @Injectable()
 export class TeamsService {
     constructor(
         private readonly eventsService: EventsService,
         private readonly usersService: UsersService,
+        private readonly userEventService: UserEventService,
         @InjectRepository(Teams)
         private teamsRepository: Repository<Teams>,
     ) { }
@@ -48,16 +50,16 @@ export class TeamsService {
             throw new HttpException('Event not found', HttpStatus.NOT_FOUND);
         }
 
+        const eventUsers = await this.userEventService.getUsersByEventId(eventId);
         const teams = await this.teamsRepository.find({ where: { event: { id: eventId } }, relations: ["users"] });
-
         const teamUserIds = teams.flatMap((team) => team.users.map((user) => user.id));
-
-        const allUsers = await this.usersService.findAll();
-
-        const freePlayers = allUsers.filter((user) => !teamUserIds.includes(user.id));
+        const freePlayers = eventUsers.filter((user) => !teamUserIds.includes(user.id));
+        console.log(typeof eventUsers, Array.isArray(eventUsers));
 
         return freePlayers;
     }
+
+
 
     async addUsersToTeam(teamId: number, userIds: number[]): Promise<Teams> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users"] });

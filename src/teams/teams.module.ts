@@ -7,15 +7,19 @@ import { User } from 'src/users/user.entity';
 import { Teams } from 'src/teams/teams.entity';
 import { TeamsService } from './teams.service';
 import { TeamsController } from './teams.controller';
+import { userEvent } from 'src/user-event/user-event.entity';
+import { UserEventModule } from 'src/user-event/user-event.module';
+import { UserEventService } from 'src/user-event/user-event.service';
 
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Events, User, Teams]),
+    TypeOrmModule.forFeature([Events, User, Teams, userEvent]),
     forwardRef(() => UsersModule),
     forwardRef(() => EventsModule),
+    forwardRef(() => userEvent),
   ],
-  providers: [TeamsService],
+  providers: [TeamsService, UserEventService],
   exports: [TeamsService],
   controllers: [TeamsController],
 })
