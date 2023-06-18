@@ -13,19 +13,24 @@ services:
       - "3306:3306"
 
   idemiafoot-back:
-      env_file:
-        - /home/ubuntu/.env
-      image: loicverniere/idemiafoot-back:main
-      restart: always
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.idemiafoot-back.rule=Host(`api.foot-idemia.fr`)"
-        - "traefik.http.routers.idemiafoot-back.entrypoints=websecure"
-        - "traefik.http.routers.idemiafoot-back.tls.certresolver=letsencryptresolver"
-        - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
-        - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
-      volumes:
-       - "~/.env:/app/.env"
+    env_file:
+      - /home/ubuntu/.env
+    image: loicverniere/idemiafoot-back:main
+    restart: always
+    environment:
+      DB_HOST: db-idemiafoot
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.idemiafoot-back.rule=Host(`api.foot-idemia.fr`)"
+      - "traefik.http.routers.idemiafoot-back.entrypoints=websecure"
+      - "traefik.http.routers.idemiafoot-back.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
+      - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
+    volumes:
+      - "/home/ubuntu/.env:/app/.env"
 
   traefik:
     image: "traefik:v2.10"
