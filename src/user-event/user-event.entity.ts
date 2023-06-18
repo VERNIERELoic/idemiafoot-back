@@ -1,6 +1,7 @@
 import { Events } from 'src/events/events.entity';
+import { Teams } from 'src/teams/teams.entity';
 import { User } from 'src/users/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, ManyToMany, JoinTable, AfterLoad, BeforeUpdate, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, ManyToMany, JoinTable, AfterLoad, BeforeUpdate, BeforeInsert, OneToMany } from 'typeorm';
 @Entity('user-events')
 export class userEvent {
     @PrimaryGeneratedColumn()

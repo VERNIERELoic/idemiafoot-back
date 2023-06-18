@@ -18,7 +18,7 @@ export class UserEventController {
     constructor(private readonly userEventService: UserEventService) { }
 
     @Post('addUserToEvent')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, UserIsSelfBodyGuard)
     async addUserToEvent(@Body() requestBody: { userId: number, eventId: number }) {
         try {
             const { userId, eventId } = requestBody;

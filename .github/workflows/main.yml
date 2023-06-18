@@ -60,7 +60,6 @@ jobs:
           ssh-keyscan 129.151.232.234 >> ~/.ssh/known_hosts
           ssh ubuntu@129.151.232.234 "if [ ! -d ~/idemiafoot-back ]; then mkdir -p ~/idemiafoot-back; fi"
           scp docker-compose.yml ubuntu@129.151.232.234:~/idemiafoot-back
-          ssh ubuntu@129.151.232.234 "source ~/.env"
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker stop idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker rm idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:main"
