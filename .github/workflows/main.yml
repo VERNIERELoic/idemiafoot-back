@@ -57,6 +57,9 @@ jobs:
     needs: build_and_push
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        
       - name: Deploy to Oracle Cloud
         run: |
           mkdir -p ~/.ssh/
