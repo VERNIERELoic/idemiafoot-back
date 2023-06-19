@@ -48,7 +48,6 @@ export class TeamsController {
     @Post('getFreePlayers')
     @UseGuards(JwtAuthGuard)
     async getFreePlayers(@Body('eventId') eventId: number): Promise<User[]> {
-        console.log(eventId);
       return this.teamsService.getFreePlayers(eventId);
     }
 }
