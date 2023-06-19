@@ -6,8 +6,8 @@ on:
     - main
 
 jobs:
-  push_to_registry:
-    name: Build, Push Docker image to Docker Hub and Deploy
+  build_and_push:
+    name: Build, Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
@@ -20,19 +20,19 @@ jobs:
         uses: docker/setup-buildx-action@v2
       
       - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       
       - name: Extract metadata (tags, labels) for Docker
         id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        uses: docker/metadata-action@v3
         with:
           images: loicverniere/idemiafoot-back
       
       - name: Build and push Docker image
-        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
+        uses: docker/build-push-action@v3
         with:
           context: .  
           file: ./Dockerfile
@@ -40,7 +40,12 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-
+          
+  deploy:
+    name: Deploy to Oracle Cloud
+    needs: build_and_push
+    runs-on: ubuntu-latest
+    steps:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
@@ -63,8 +68,4 @@ jobs:
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker stop idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker rm idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:main"
-          ssh ubuntu@129.151.232.234 "cp ~/production/.env ~/idemiafoot-back"
-          ssh ubuntu@129.151.232.234 "cd ~/idemiafoot-back && docker-compose pull && docker-compose --env-file=.env up -d"
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          ssh ubuntu@129.151.232.234 "cp ~/production/.env ~/id
