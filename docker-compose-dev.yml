@@ -5,7 +5,9 @@ services:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
       MYSQL_DATABASE: db-idemiafoot
+      MYSQL_AUTHENTICATION_PLUGIN: caching_sha2_password
     ports:
       - "3306:3306"

@@ -5,8 +5,11 @@ services:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_AUTHENTICATION_PLUGIN: caching_sha2_password
     volumes:
       - idemiafoot-data:/var/lib/mysql
     ports:
@@ -15,15 +18,19 @@ services:
   idemiafoot-back:
     depends_on:
       - db-idemiafoot
-    env_file:
-      - /home/ubuntu/.env
     image: loicverniere/idemiafoot-back:main
     restart: always
+    env_file:
+      - .env
     environment:
-      DB_HOST: db-idemiafoot
-      DB_USERNAME: root
-      DB_PASSWORD: ${DB_PASSWORD}
+      DB_HOST: ${DB_HOST}
       DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      REFRESH_TOKEN: ${REFRESH_TOKEN}
+      EMAIL: ${EMAIL}
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.idemiafoot-back.rule=Host(`api.foot-idemia.fr`)"
@@ -31,8 +38,6 @@ services:
       - "traefik.http.routers.idemiafoot-back.tls.certresolver=letsencryptresolver"
       - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
       - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
-    volumes:
-      - "/home/ubuntu/.env:/app/.env"
 
   traefik:
     image: "traefik:v2.10"
