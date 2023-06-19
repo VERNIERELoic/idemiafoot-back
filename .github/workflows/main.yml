@@ -69,3 +69,5 @@ jobs:
           ssh ubuntu@129.151.232.234 "if [ \"$(docker ps -aq -f name=idemiafoot-back)\" ]; then docker rm idemiafoot-back; fi"
           ssh ubuntu@129.151.232.234 "docker pull loicverniere/idemiafoot-back:main"
           ssh ubuntu@129.151.232.234 "cp ~/production/.env ~/id
+          ssh ubuntu@129.151.232.234 "cp ~/production/.env ~/id
+          ssh ubuntu@129.151.232.234 "cd ~/idemiafoot-back && docker-compose pull && docker-compose --env-file=.env up -d"
