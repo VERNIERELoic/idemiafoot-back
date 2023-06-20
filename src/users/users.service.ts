@@ -28,7 +28,6 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-
   async update(userId: number, createUserDto: CreateUserDto): Promise<User> {
 
     const user = await this.usersRepository.findOneBy({ id: userId });
@@ -71,6 +70,19 @@ export class UsersService {
   async remove(id: string): Promise<void> {
     await this.usersRepository.delete(id);
   }
+
+  async addAdmin(id: number): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id: id });
+    user.isAdmin = true;
+    return this.usersRepository.save(user);
+  }
+
+  async removeAdmin(id: number): Promise<User> {
+    const user = await this.usersRepository.findOneBy({ id: id });
+    user.isAdmin = false;
+    return this.usersRepository.save(user);
+  }
+  
 }
 
 export { User };
