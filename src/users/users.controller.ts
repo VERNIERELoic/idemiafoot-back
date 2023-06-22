@@ -9,9 +9,6 @@ import {
   UseGuards,
   Req,
   Put,
-  ConflictException,
-  NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,6 +16,7 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UserIsSelfGuard } from 'src/auth/guards/user-is-self-guard';
 import { AdminGuard } from 'src/auth/guards/admin-guard';
+import { isSelfOrAdminGuard } from 'src/auth/guards/is-self-or-admin-guard';
 
 @Controller('users')
 export class UsersController {
@@ -37,7 +35,6 @@ export class UsersController {
   ): Promise<User> {
     return await this.usersService.update(id, createUserDto);
   }
-
 
   @Post('findByUsername')
   @UseGuards(JwtAuthGuard, AdminGuard)
@@ -71,20 +68,21 @@ export class UsersController {
   }
 
   @Delete('remove/:id')
-  @UseGuards(JwtAuthGuard, UserIsSelfGuard)
+  @UseGuards(JwtAuthGuard, isSelfOrAdminGuard)
   async remove(@Param('id') id: string): Promise<any> {
     return this.usersService.remove(id);
   }
 
 
   @Post('addAdmin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard,AdminGuard)
   async addAdmin(@Body('userId') userId: number): Promise<User> {
+    console.log("add admin", userId);
     return this.usersService.addAdmin(userId);
   }
 
   @Post('removeAdmin')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async getUsersByTeam(@Body('userId') userId: number): Promise<User> {
     return this.usersService.removeAdmin(userId);
   }
