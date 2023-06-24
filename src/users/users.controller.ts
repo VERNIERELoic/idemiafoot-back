@@ -77,7 +77,6 @@ export class UsersController {
   @Post('addAdmin')
   @UseGuards(JwtAuthGuard,AdminGuard)
   async addAdmin(@Body('userId') userId: number): Promise<User> {
-    console.log("add admin", userId);
     return this.usersService.addAdmin(userId);
   }
 

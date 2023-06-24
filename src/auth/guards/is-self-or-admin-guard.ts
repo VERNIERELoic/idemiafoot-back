@@ -6,8 +6,7 @@ export class isSelfOrAdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const paramId = Number(request.params.id);
     const jwtId = Number(request.user.userId);
-    console.log(request.user.isAdmin);
-
+    
     if (request.user.isAdmin || paramId === jwtId) {
       return true;
     }
