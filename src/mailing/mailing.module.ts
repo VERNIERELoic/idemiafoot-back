@@ -4,7 +4,6 @@ import { MailingService } from './mailing.service';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
-import { UsersService } from 'src/users/users.service';
 
 @Module({
   imports: [

@@ -48,7 +48,7 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
@@ -62,20 +62,20 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.findOne(id);
   }
 
   @Delete('remove/:id')
-  @UseGuards(JwtAuthGuard, isSelfOrAdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async remove(@Param('id') id: string): Promise<any> {
     return this.usersService.remove(id);
   }
 
 
   @Post('addAdmin')
-  @UseGuards(JwtAuthGuard,AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async addAdmin(@Body('userId') userId: number): Promise<User> {
     return this.usersService.addAdmin(userId);
   }
