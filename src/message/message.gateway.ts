@@ -24,7 +24,6 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
     this.server.emit('messageFromServer', newMessage);
   }
 
-
   afterInit(server: Server) {
     console.log('Init');
   }
