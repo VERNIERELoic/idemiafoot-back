@@ -9,15 +9,17 @@ import {
   UseGuards,
   Req,
   Put,
-  ConflictException,
-  NotFoundException,
-  UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UserIsSelfGuard } from 'src/auth/guards/user-is-self-guard';
+import { AdminGuard } from 'src/auth/guards/admin-guard';
+import { isSelfOrAdminGuard } from 'src/auth/guards/is-self-or-admin-guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -37,26 +39,22 @@ export class UsersController {
     return await this.usersService.update(id, createUserDto);
   }
 
-  // WARNING ! ----- DEBUG ONLY -----
-  
-  // @Post('findByUsername')
-  // @UseGuards(JwtAuthGuard)
-  // async findByUsername(@Body() body: { username: string }) {
-  //   const user = await this.usersService.findByUsername(body.username);
-  //   if (user) {
-  //     return user;
-  //   } else {
-  //     return { message: 'User not found' };
-  //   }
-  // }
+  @Post('findByUsername')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async findByUsername(@Body() body: { username: string }) {
+    const user = await this.usersService.findByUsername(body.username);
+    if (user) {
+      return user;
+    } else {
+      return { message: 'User not found' };
+    }
+  }
 
-  // @Get()
-  // @UseGuards(JwtAuthGuard)
-  // findAll(): Promise<User[]> {
-  //   return this.usersService.findAll();
-  // }
-
-  // WARNING ! ----- DEBUG ONLY -----
+  @Get()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  findAll(): Promise<User[]> {
+    return this.usersService.findAll();
+  }
 
   @Get('current')
   @UseGuards(JwtAuthGuard)
@@ -67,15 +65,34 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
     return this.usersService.findOne(id);
   }
 
   @Delete('remove/:id')
-  @UseGuards(JwtAuthGuard, UserIsSelfGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async remove(@Param('id') id: string): Promise<any> {
     return this.usersService.remove(id);
   }
 
+
+  @Post('addAdmin')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async addAdmin(@Body('userId') userId: number): Promise<User> {
+    return this.usersService.addAdmin(userId);
+  }
+
+  @Post('removeAdmin')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async getUsersByTeam(@Body('userId') userId: number): Promise<User> {
+    return this.usersService.removeAdmin(userId);
+  }
+
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(@UploadedFile() file, @Body('userId') userId: number) {
+    return this.usersService.upload(file, userId);
+  }
 }

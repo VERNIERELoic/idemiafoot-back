@@ -59,7 +59,6 @@ export class TeamsService {
     }
 
 
-
     async addUsersToTeam(teamId: number, userIds: number[]): Promise<Teams> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users", "event"] });
         if (!team) {
@@ -100,8 +99,4 @@ export class TeamsService {
 
         return team.users;
     }
-
-
-
-
 }

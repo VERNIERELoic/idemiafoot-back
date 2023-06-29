@@ -13,6 +13,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TeamsModule } from './teams/teams.module';
+import { MessageModule } from './message/message.module';
+import { MulterModule } from './multer/multer.module';
 
 @Module({
   imports: [
@@ -52,6 +54,8 @@ import { TeamsModule } from './teams/teams.module';
     UserEventModule,
     MailingModule,
     TeamsModule,
+    MessageModule,
+    MulterModule,
   ],
   controllers: [AppController],
   providers: [AuthService, AppService],

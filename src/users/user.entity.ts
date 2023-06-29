@@ -26,6 +26,12 @@ export class User {
   @Column()
   phone: string;
 
+  @Column()
+  avatar: string;
+
+  @Column({ default: false })
+  isAdmin: boolean;
+
   @OneToMany(() => userEvent, (userEvent) => userEvent.user)
   userEvents: userEvent[];
 
