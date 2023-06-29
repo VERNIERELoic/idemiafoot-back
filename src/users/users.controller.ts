@@ -9,6 +9,8 @@ import {
   UseGuards,
   Req,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -17,6 +19,7 @@ import { UsersService } from './users.service';
 import { UserIsSelfGuard } from 'src/auth/guards/user-is-self-guard';
 import { AdminGuard } from 'src/auth/guards/admin-guard';
 import { isSelfOrAdminGuard } from 'src/auth/guards/is-self-or-admin-guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -86,4 +89,10 @@ export class UsersController {
     return this.usersService.removeAdmin(userId);
   }
 
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(@UploadedFile() file, @Body('userId') userId: number) {
+    return this.usersService.upload(file, userId);
+  }
 }

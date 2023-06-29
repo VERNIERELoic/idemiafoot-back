@@ -17,10 +17,10 @@ import { UserEventService } from 'src/user-event/user-event.service';
     TypeOrmModule.forFeature([Events, User, Teams, userEvent]),
     forwardRef(() => UsersModule),
     forwardRef(() => EventsModule),
-    forwardRef(() => userEvent),
+    forwardRef(() => UserEventModule),
   ],
   providers: [TeamsService, UserEventService],
   exports: [TeamsService],
   controllers: [TeamsController],
 })
-export class TeamsModule {}
+export class TeamsModule { }

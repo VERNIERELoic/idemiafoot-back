@@ -82,6 +82,12 @@ export class UsersService {
     user.isAdmin = false;
     return this.usersRepository.save(user);
   }
+
+  async upload(file: { path: string; }, id: number): Promise<void> {
+    const user = await this.usersRepository.findOneBy({ id: id });
+    user.avatar = file.path;
+    await this.usersRepository.save(user);
+  }
   
 }
 
