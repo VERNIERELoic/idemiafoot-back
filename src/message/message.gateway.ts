@@ -1,12 +1,21 @@
 import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
+import { ConfigService } from '@nestjs/config';
 
 let users = [];
 
 @WebSocketGateway({
   cors: {
-    origin: "http://localhost:4200",
+    origin: (origin, callback) => {
+      const configService = new ConfigService();
+      const allowedOrigins = [configService.get<string>('FRONT')];
+      if (allowedOrigins.indexOf(origin) === -1) {
+        callback(new Error('Not allowed by CORS'));
+      } else {
+        callback(null, true);
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true
   },
