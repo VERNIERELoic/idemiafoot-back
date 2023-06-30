@@ -24,7 +24,7 @@ let users = [];
 export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
 
-  constructor(private messageService: MessageService) {
+  constructor(private messageService: MessageService, private configService: ConfigService) {
   }
 
   @SubscribeMessage('message')

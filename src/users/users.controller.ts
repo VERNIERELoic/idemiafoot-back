@@ -9,8 +9,8 @@ import {
   UseGuards,
   Req,
   Put,
-  UploadedFile,
   UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -18,12 +18,11 @@ import { User } from './user.entity';
 import { UsersService } from './users.service';
 import { UserIsSelfGuard } from 'src/auth/guards/user-is-self-guard';
 import { AdminGuard } from 'src/auth/guards/admin-guard';
-import { isSelfOrAdminGuard } from 'src/auth/guards/is-self-or-admin-guard';
-import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
+
 
   @Post('register')
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
@@ -89,10 +88,18 @@ export class UsersController {
     return this.usersService.removeAdmin(userId);
   }
 
+  // @Post('upload')
+  // @UseInterceptors(FileInterceptor('image'))
+  // async uploadSingle(
+  //   @UploadedFile() image: BufferedFile
+  // ) {
+  //   this.minioClientService.upload(image);
+  //   console.log(image)
+  // }
 
-  @Post('upload')
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadAvatar(@UploadedFile() file, @Body('userId') userId: number) {
-    return this.usersService.upload(file, userId);
-  }
+  // ## Using S3 storage from now
+  // @Post('upload')
+  // async uploadFile(@Body('avatar') img: string, @Body('userId') userId: number) {
+  //   return this.usersService.upload(img, userId);
+  // }
 }

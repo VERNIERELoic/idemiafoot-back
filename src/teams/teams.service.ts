@@ -58,6 +58,15 @@ export class TeamsService {
         return freePlayers;
     }
 
+    async isTeamExist(teamId: number): Promise<Teams> {
+        const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users", "event"] });
+        if (!team) {
+            throw new HttpException('Team not found', HttpStatus.NOT_FOUND);
+        }
+        return team;
+    }
+
+
 
     async addUsersToTeam(teamId: number, userIds: number[]): Promise<Teams> {
         const team = await this.teamsRepository.findOne({ where: { id: teamId }, relations: ["users", "event"] });
@@ -82,11 +91,8 @@ export class TeamsService {
             }
             usersToAdd.push(user);
         }
-
         team.users = team.users.filter(user => userIds.includes(user.id));
-
         team.users.push(...usersToAdd);
-
         return this.teamsRepository.save(team);
     }
 

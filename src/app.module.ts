@@ -14,7 +14,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TeamsModule } from './teams/teams.module';
 import { MessageModule } from './message/message.module';
-import { MulterModule } from './multer/multer.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { MinioClientModule } from './minio-client/minio-client.module';
 
 @Module({
   imports: [
@@ -55,7 +56,8 @@ import { MulterModule } from './multer/multer.module';
     MailingModule,
     TeamsModule,
     MessageModule,
-    MulterModule,
+    FileUploadModule,
+    MinioClientModule,
   ],
   controllers: [AppController],
   providers: [AuthService, AppService],
