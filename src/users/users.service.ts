@@ -1,13 +1,16 @@
-import { Injectable, NotFoundException, Req } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException, Req } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
+import { Readable } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
 export class UsersService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) { }
@@ -83,12 +86,25 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async upload(file: { path: string; }, id: number): Promise<void> {
-    const user = await this.usersRepository.findOneBy({ id: id });
-    user.avatar = file.path;
-    await this.usersRepository.save(user);
-  }
-  
+  // async upload(img: string, userId: number): Promise<User> {
+  //   const user = await this.usersRepository.findOneBy({ id: userId });
+  //   const imgBuffer = Buffer.from(img.split(',')[1], 'base64');
+
+  //   const maxSize = 2 * 1024 * 1022;
+  //   if (imgBuffer.length > maxSize) {
+  //     throw new BadRequestException('File is too large.');
+  //   }
+
+  //   const fileName = `${user.username}.jpg`;
+
+  //   // Note: Replace 'avatarbucket' with the name of your MinIO bucket
+  //   const fileUrl = await this.uploadToMinio('avatarbucket', fileName, imgBuffer);
+
+  //   user.avatar = fileUrl;
+  //   return this.usersRepository.save(user);
+  // }
+
+
 }
 
 export { User };
