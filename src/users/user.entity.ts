@@ -26,7 +26,7 @@ export class User {
   @Column()
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatar: string;
 
   @Column({ default: false })
