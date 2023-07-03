@@ -51,10 +51,10 @@ export class MailingService {
         this.mailerService
             .sendMail({
                 transporterName: 'gmail',
-                to: emails.join(', '), 
+                bcc: emails.join(', '), 
                 from: 'foot.idemia@gmail.com',
-                subject: 'Football event - @NoReply', // Subject line
-                template: 'newEventTemplate', // template file
+                subject: 'Football event - @NoReply',
+                template: 'newEventTemplate',
             })
             .then((success) => {
                 console.log(success);
