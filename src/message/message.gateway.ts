@@ -2,6 +2,7 @@ import { SubscribeMessage, WebSocketGateway, OnGatewayInit, WebSocketServer, OnG
 import { Server, Socket } from 'socket.io';
 import { MessageService } from './message.service';
 import { ConfigService } from '@nestjs/config';
+import { User } from 'src/users/user.entity';
 
 let users = [];
 
@@ -28,8 +29,8 @@ export class MessageGateway implements OnGatewayInit, OnGatewayConnection, OnGat
   }
 
   @SubscribeMessage('message')
-  async handleMessage(client: Socket, payload: { username: string; text: string; }): Promise<void> {
-    const newMessage = await this.messageService.createMessage(payload.username, payload.text);
+  async handleMessage(client: Socket, payload: { user: User,  text: string; }): Promise<void> {
+    const newMessage = await this.messageService.createMessage(payload.user, payload.text);
     this.server.emit('messageFromServer', newMessage);
   }
 

@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express'
 import { FileUploadService } from './file-upload.service';
 import { BufferedFile } from 'src/minio-client/file.model';
@@ -9,11 +9,12 @@ export class FileUploadController {
         private fileUploadService: FileUploadService
     ) { }
 
-    @Post('single')
+    @Post(':userId/single')
     @UseInterceptors(FileInterceptor('image'))
     async uploadSingle(
+        @Param('userId') userId: number,
         @UploadedFile() image: BufferedFile
     ) {
-        return await this.fileUploadService.uploadSingle(image)
+        return await this.fileUploadService.uploadSingle(image, userId)
     }
 }

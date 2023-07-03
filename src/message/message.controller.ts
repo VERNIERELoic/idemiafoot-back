@@ -6,15 +6,19 @@ import {
   import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { MessageService } from './message.service';
 import { Message } from './message.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Controller('message')
 export class MessageController {
 
-    constructor(private messageService: MessageService){}
+    constructor(private messageService: MessageService,
+    @InjectRepository(Message)
+    private messageRepository: Repository<Message>,){}
     
     @Get()
     @UseGuards(JwtAuthGuard)
-    findAll(): Promise<Message[]> {
+    async findAll(): Promise<Message[]> {
         return this.messageService.findAll();
-    }
+      }
 }
