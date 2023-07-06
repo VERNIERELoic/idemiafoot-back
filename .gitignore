@@ -1,6 +1,9 @@
 # dependencies
 /node_modules
 
+#minio
+/data
+
 # IDE
 /.idea
 /.awcache
