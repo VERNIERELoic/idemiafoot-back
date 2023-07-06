@@ -45,7 +45,7 @@ export class MinioClientService {
 
         await this.client.putObject(baseBucket, fileName, fileBuffer, size, metaData);
 
-        const url = `${this.configService.get<string>('MINIO_ENDPOINT_PUBLIC') ?? "http://localhost"}:9000/${this.configService.get<string>('MINIO_BUCKET')}/${filename}`;
+        const url = `${this.configService.get<string>('MINIO_ENDPOINT_PUBLIC') ?? "http://localhost:9000"}/${this.configService.get<string>('MINIO_BUCKET')}/${filename}`;
 
 
         const user = await this.usersRepository.findOneBy({ id: user_id });
