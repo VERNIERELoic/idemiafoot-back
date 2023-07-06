@@ -1,12 +1,14 @@
-import { Entity, PrimaryColumn, Column, CreateDateColumn } from 'typeorm';
+import { User } from 'src/users/user.entity';
+import { Entity, PrimaryColumn, Column, CreateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity('message')
 export class Message {
     @PrimaryColumn('uuid')
     id: string;
 
-    @Column()
-    username: string;
+    @ManyToOne(() => User, (user) => user.message, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'userId' })
+    user: User;
 
     @Column()
     text: string;

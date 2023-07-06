@@ -8,9 +8,9 @@ export class FileUploadService {
     private minioClientService: MinioClientService
   ) {}
 
-  async uploadSingle(image: BufferedFile) {
+  async uploadSingle(image: BufferedFile, userId: number) {
 
-    let uploaded_image = await this.minioClientService.upload(image)
+    let uploaded_image = await this.minioClientService.upload(userId, image);
 
     return {
       image_url: uploaded_image.url,

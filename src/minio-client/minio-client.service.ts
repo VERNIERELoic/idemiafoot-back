@@ -3,6 +3,9 @@ import { MinioService } from 'nestjs-minio-client';
 import { BufferedFile } from '../minio-client/file.model.js';
 import * as crypto from 'crypto'
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class MinioClientService {
@@ -16,11 +19,14 @@ export class MinioClientService {
     constructor(
         private readonly minio: MinioService,
         private configService: ConfigService,
+        @InjectRepository(User)
+        private usersRepository: Repository<User>,
     ) {
         this.logger = new Logger('MinioStorageService');
+        this.setBucketPolicy();
     }
 
-    public async upload(file: BufferedFile, baseBucket: string = this.baseBucket) {
+    public async upload(user_id: number, file: BufferedFile, baseBucket: string = this.baseBucket) {
         if (!(file.mimetype.includes('jpeg') || file.mimetype.includes('png'))) {
             throw new HttpException('Error uploading file', HttpStatus.BAD_REQUEST)
         }
@@ -35,17 +41,60 @@ export class MinioClientService {
         const fileName: string = `${filename}`;
         const fileBuffer = file.buffer;
 
-        const size = fileBuffer.length;  // Get file size from buffer
+        const size = fileBuffer.length;
 
-        this.client.putObject(baseBucket, fileName, fileBuffer, size, metaData, function (err, res) {
-            if (err) throw new HttpException('Error uploading file', HttpStatus.BAD_REQUEST)
-        });
+        await this.client.putObject(baseBucket, fileName, fileBuffer, size, metaData);
 
-        return {
-            url: `${this.configService.get<string>('MINIO_ENDPOINT') ?? "localhost"}:9001/${this.configService.get<string>('MINIO_BUCKET')}/${filename}`
+        const url = `${this.configService.get<string>('MINIO_ENDPOINT') ?? "http://localhost"}:9000/${this.configService.get<string>('MINIO_BUCKET')}/${filename}`;
+
+
+        const user = await this.usersRepository.findOneBy({ id: user_id });
+        if (!user) {
+            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
         }
+        user.avatar = url;
+        await this.usersRepository.save(user);
+
+        return { url };
     }
 
+    async setBucketPolicy(baseBucket: string = this.baseBucket) {
+        const policy = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": [
+                        "s3:ListBucket"
+                    ],
+                    "Effect": "Deny",
+                    "Principal": {
+                        "AWS": [
+                            "*"
+                        ]
+                    },
+                    "Resource": [
+                        "arn:aws:s3:::avatar"
+                    ]
+                },
+                {
+                    "Action": [
+                        "s3:GetObject"
+                    ],
+                    "Effect": "Allow",
+                    "Principal": {
+                        "AWS": [
+                            "*"
+                        ]
+                    },
+                    "Resource": [
+                        "arn:aws:s3:::avatar/*"
+                    ]
+                }
+            ]
+        }
+
+        await this.client.setBucketPolicy(baseBucket, JSON.stringify(policy));
+    }
 
     async delete(objetName: string, baseBucket: string = this.baseBucket) {
         try {

@@ -39,6 +39,24 @@ services:
       - "traefik.http.routers.idemiafoot-back.service=idemiafoot-service"
       - "traefik.http.services.idemiafoot-service.loadbalancer.server.port=3000"
 
+  minio:
+    image: minio/minio
+    volumes:
+      - ./data:/data
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESSKEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRETKEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.minio.rule=Host(`s3.foot-idemia.fr`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls.certresolver=letsencryptresolver"
+      - "traefik.http.routers.minio.service=minio-service"
+      - "traefik.http.services.minio-service.loadbalancer.server.port=9000"
+    command: server /data
+    ports:
+      - "9000:9000"
+
   traefik:
     image: "traefik:v2.10"
     container_name: "traefik"

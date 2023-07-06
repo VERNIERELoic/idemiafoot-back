@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Message } from './message.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class MessageService {
@@ -11,10 +12,10 @@ export class MessageService {
         private messageRepository: Repository<Message>,
     ) { }
 
-    async createMessage(username: string, text: string): Promise<Message> {
+    async createMessage(user: User, text: string): Promise<Message> {
         const newMessage = this.messageRepository.create({
             id: uuidv4(),
-            username,
+            user,
             text,
         });
         console.log(newMessage);
@@ -27,6 +28,9 @@ export class MessageService {
     }
 
     async findAll(): Promise<Message[]> {
-        return this.messageRepository.find();
-    }
+        return this.messageRepository
+          .createQueryBuilder('message')
+          .leftJoinAndSelect('message.user', 'user')
+          .getMany();
+      }      
 }
