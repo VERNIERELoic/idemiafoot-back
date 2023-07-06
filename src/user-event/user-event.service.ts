@@ -5,12 +5,15 @@ import { EventsService } from "src/events/events.service";
 import { User, UsersService } from "src/users/users.service";
 import { Repository } from "typeorm";
 import { userEvent } from "./user-event.entity";
+import { MailerService } from "@nestjs-modules/mailer";
+import { MailingService } from "src/mailing/mailing.service";
 
 @Injectable()
 export class UserEventService {
     constructor(
         private readonly eventsService: EventsService,
         private readonly usersService: UsersService,
+        private readonly mailingService: MailingService,
         @InjectRepository(userEvent)
         private userEventRepository: Repository<userEvent>,
     ) { }

@@ -9,6 +9,8 @@ import { Events } from 'src/events/events.entity';
 import { User } from 'src/users/user.entity';
 import { Teams } from 'src/teams/teams.entity';
 import { TeamsModule } from 'src/teams/teams.module';
+import { MailingService } from 'src/mailing/mailing.service';
+import { MailingModule } from 'src/mailing/mailing.module';
 
 @Module({
   imports: [
@@ -17,7 +19,7 @@ import { TeamsModule } from 'src/teams/teams.module';
     forwardRef(() => EventsModule),
     forwardRef(() => TeamsModule),
   ],
-  providers: [UserEventService],
+  providers: [UserEventService, MailingService],
   exports: [UserEventService],
   controllers: [UserEventController],
 })

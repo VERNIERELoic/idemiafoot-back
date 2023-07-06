@@ -1,0 +1,33 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Effect": "Deny",
+            "Principal": {
+                "AWS": [
+                    "*"
+                ]
+            },
+            "Resource": [
+                "arn:aws:s3:::avatar"
+            ]
+        },
+        {
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": [
+                    "*"
+                ]
+            },
+            "Resource": [
+                "arn:aws:s3:::avatar/*"
+            ]
+        }
+    ]
+}

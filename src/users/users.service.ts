@@ -4,13 +4,10 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.entity';
 import * as bcrypt from 'bcryptjs';
-import { ConfigService } from '@nestjs/config';
-import { Readable } from 'typeorm/platform/PlatformTools';
 
 @Injectable()
 export class UsersService {
   constructor(
-    private readonly configService: ConfigService,
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) { }
@@ -63,6 +60,10 @@ export class UsersService {
 
   findOne(id: number): Promise<User> {
     return this.usersRepository.findOneBy({ id: id });
+  }
+
+  findOneByEmail(email: string): Promise<User> {
+    return this.usersRepository.findOneBy({ email: email });
   }
 
   async findByUsername(username: string): Promise<User> {

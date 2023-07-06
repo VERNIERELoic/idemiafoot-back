@@ -24,6 +24,13 @@ export class AppController {
         return this.authService.login(req.user);
     }
 
+    @Post('auth/forgot')
+    async forgotPassword(@Body() body: { email: string }) {
+      const { email } = body;
+      await this.authService.sendPasswordResetEmail(email);
+      return { message: 'Recovering email sent' };
+    }
+
     @UseGuards(JwtAuthGuard)
     @Get('profile')
     getProfile(@Request() req) {
