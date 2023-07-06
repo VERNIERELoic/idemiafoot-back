@@ -51,10 +51,31 @@ export class MailingService {
         this.mailerService
             .sendMail({
                 transporterName: 'gmail',
-                to: emails.join(', '), 
+                bcc: emails.join(', '),
                 from: 'foot.idemia@gmail.com',
-                subject: 'Football event - @NoReply', // Subject line
-                template: 'newEventTemplate', // template file
+                subject: 'Football IDEMIA - New event - @NoReply',
+                template: 'newEventTemplate',
+            })
+            .then((success) => {
+                console.log(success);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
+
+    public async sendPasswordResetEmail(email: string, resetUrl: string) {
+        await this.setTransport();
+        this.mailerService
+            .sendMail({
+                transporterName: 'gmail',
+                to: email,
+                from: 'foot.idemia@gmail.com',
+                subject: 'Football IDEMIA - Password reset - @NoReply',
+                template: 'forgotTemplate',
+                context: {
+                    resetUrl: resetUrl,
+                },
             })
             .then((success) => {
                 console.log(success);

@@ -6,11 +6,13 @@ import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailingModule } from 'src/mailing/mailing.module';
 
 @Module({
   imports: [
     UsersModule,
     PassportModule,
+    MailingModule,
     ConfigModule, 
     JwtModule.registerAsync({ 
       imports: [ConfigModule],
