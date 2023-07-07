@@ -65,6 +65,7 @@ export class TeamsService {
         }
         
         const team = await this.validateTeamExists(teamId);
+        team.users = [];
 
         const usersToAdd = [];
         for (const userId of userIds) {

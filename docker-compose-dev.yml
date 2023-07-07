@@ -6,7 +6,8 @@ services:
     restart: always
     environment:
       MYSQL_USER: admin
-      MYSQL_PASSWORD: root
+      MYSQL_PASSWORD: admin
+      MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: db-idemiafoot
       MYSQL_AUTHENTICATION_PLUGIN: caching_sha2_password
     ports:
